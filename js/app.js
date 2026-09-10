@@ -127,6 +127,18 @@
     adminRememberMeCheckbox: document.getElementById('adminRememberMeCheckbox'),
     adminLoginErrorBox: document.getElementById('adminLoginErrorBox'),
 
+    // Change Password Modal
+    adminBadgeIndicator: document.getElementById('adminBadgeIndicator'),
+    openChangePasswordModalBtn: document.getElementById('openChangePasswordModalBtn'),
+    changePasswordModal: document.getElementById('changePasswordModal'),
+    closeChangePasswordModalBtn: document.getElementById('closeChangePasswordModalBtn'),
+    cancelChangePasswordBtn: document.getElementById('cancelChangePasswordBtn'),
+    changePasswordForm: document.getElementById('changePasswordForm'),
+    changePasswordErrorBox: document.getElementById('changePasswordErrorBox'),
+    currentPasswordInput: document.getElementById('currentPasswordInput'),
+    newPasswordInput: document.getElementById('newPasswordInput'),
+    confirmPasswordInput: document.getElementById('confirmPasswordInput'),
+
     // Edit Word Modal
     editWordModal: document.getElementById('editWordModal'),
     editWordModalTitle: document.getElementById('editWordModalTitle'),
@@ -980,10 +992,12 @@
 
   async function verifyAdminCredentials(login, password) {
     if (login.trim().toLowerCase() !== 'admin') return false;
-    if (password === 'admin123' || password === 'admin') return true;
-    const storedHash = localStorage.getItem('dict_admin_pwd_hash') || DEFAULT_ADMIN_HASH;
+    const storedHash = localStorage.getItem('dict_admin_pwd_hash');
     const inputHash = await hashPassword(password);
-    return inputHash === storedHash;
+    if (storedHash) {
+      return inputHash === storedHash;
+    }
+    return inputHash === DEFAULT_ADMIN_HASH || password === 'admin123';
   }
 
   function openLoginModal() {
@@ -997,6 +1011,57 @@
   function closeLoginModal() {
     elements.adminLoginModal.classList.add('hidden');
     document.body.style.overflow = '';
+  }
+
+  function openChangePasswordModal() {
+    if (!state.isAdmin) {
+      showToast(t('adminOnlyNotice'));
+      return;
+    }
+    if (elements.changePasswordErrorBox) elements.changePasswordErrorBox.classList.add('hidden');
+    if (elements.currentPasswordInput) elements.currentPasswordInput.value = '';
+    if (elements.newPasswordInput) elements.newPasswordInput.value = '';
+    if (elements.confirmPasswordInput) elements.confirmPasswordInput.value = '';
+    elements.changePasswordModal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    elements.currentPasswordInput.focus();
+  }
+
+  function closeChangePasswordModal() {
+    elements.changePasswordModal.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  async function handleChangePasswordSubmit(e) {
+    e.preventDefault();
+    const currentPwd = elements.currentPasswordInput.value;
+    const newPwd = elements.newPasswordInput.value;
+    const confirmPwd = elements.confirmPasswordInput.value;
+
+    const isCurrentValid = await verifyAdminCredentials('admin', currentPwd);
+    if (!isCurrentValid) {
+      elements.changePasswordErrorBox.textContent = t('pwdCurrentWrongError');
+      elements.changePasswordErrorBox.classList.remove('hidden');
+      return;
+    }
+
+    if (newPwd.length < 5) {
+      elements.changePasswordErrorBox.textContent = t('pwdTooShortError');
+      elements.changePasswordErrorBox.classList.remove('hidden');
+      return;
+    }
+
+    if (newPwd !== confirmPwd) {
+      elements.changePasswordErrorBox.textContent = t('pwdMismatchError');
+      elements.changePasswordErrorBox.classList.remove('hidden');
+      return;
+    }
+
+    const newHash = await hashPassword(newPwd);
+    localStorage.setItem('dict_admin_pwd_hash', newHash);
+    elements.changePasswordErrorBox.classList.add('hidden');
+    closeChangePasswordModal();
+    showToast(t('pwdChangedSuccess'));
   }
 
   async function handleAdminLoginSubmit(e) {
@@ -1441,6 +1506,41 @@
       });
     }
 
+    // Change Password Modal Listeners
+    if (elements.openChangePasswordModalBtn) {
+      elements.openChangePasswordModalBtn.addEventListener('click', openChangePasswordModal);
+    }
+    if (elements.adminBadgeIndicator) {
+      elements.adminBadgeIndicator.addEventListener('click', () => {
+        if (state.isAdmin) openChangePasswordModal();
+      });
+    }
+    if (elements.closeChangePasswordModalBtn) {
+      elements.closeChangePasswordModalBtn.addEventListener('click', closeChangePasswordModal);
+    }
+    if (elements.cancelChangePasswordBtn) {
+      elements.cancelChangePasswordBtn.addEventListener('click', closeChangePasswordModal);
+    }
+    if (elements.changePasswordForm) {
+      elements.changePasswordForm.addEventListener('submit', handleChangePasswordSubmit);
+    }
+    if (elements.changePasswordModal) {
+      elements.changePasswordModal.addEventListener('click', (e) => {
+        if (e.target === elements.changePasswordModal) closeChangePasswordModal();
+      });
+    }
+    document.querySelectorAll('.pwd-toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-target');
+        const input = document.getElementById(targetId);
+        if (input) {
+          const isPwd = input.type === 'password';
+          input.type = isPwd ? 'text' : 'password';
+          btn.textContent = isPwd ? '🙈' : '👁️';
+        }
+      });
+    });
+
     // Edit Word Modal Listeners
     if (elements.closeEditWordModalBtn) {
       elements.closeEditWordModalBtn.addEventListener('click', closeEditWordModal);
@@ -1512,7 +1612,9 @@
         elements.searchInput.select();
       }
       if (e.key === 'Escape') {
-        if (!elements.adminLoginModal.classList.contains('hidden')) {
+        if (!elements.changePasswordModal.classList.contains('hidden')) {
+          closeChangePasswordModal();
+        } else if (!elements.adminLoginModal.classList.contains('hidden')) {
           closeLoginModal();
         } else if (!elements.editWordModal.classList.contains('hidden')) {
           closeEditWordModal();
@@ -1543,6 +1645,11 @@
     // Direct login modal link support (?login=1)
     if (urlParams.get('login') === '1') {
       openLoginModal();
+    }
+
+    // Direct change password modal support (?pwd=1)
+    if ((urlParams.get('pwd') === '1' || urlParams.get('password') === '1') && state.isAdmin) {
+      openChangePasswordModal();
     }
 
     // Direct edit word modal support (?edit=1 or ?add=1)

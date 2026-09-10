@@ -90,7 +90,18 @@ const i18n = {
     addWordModalTitle: "Добавление нового слова в словарь",
     exportJsBtn: "Скачать dictionaries.js (для GitHub)",
     exportJsDesc: "Скачайте обновленный файл data/dictionaries.js для сохранения изменений на GitHub Pages.",
-    adminOnlyNotice: "Редактирование доступно только после входа администратора."
+    adminOnlyNotice: "Редактирование доступно только после входа администратора.",
+    changePasswordBtn: "Сменить пароль",
+    changePasswordTitle: "Изменение пароля администратора",
+    changePasswordDesc: "Введите текущий пароль и установите новый пароль администратора.",
+    currentPasswordLabel: "Текущий пароль:",
+    newPasswordLabel: "Новый пароль (мин. 5 символов):",
+    confirmPasswordLabel: "Подтверждение нового пароля:",
+    savePasswordBtn: "Сохранить новый пароль",
+    pwdMismatchError: "Новые пароли не совпадают!",
+    pwdCurrentWrongError: "Неверный текущий пароль!",
+    pwdTooShortError: "Новый пароль должен содержать не менее 5 символов!",
+    pwdChangedSuccess: "Пароль администратора успешно изменен!"
   },
   be: {
     appTitle: "Электронны слоўнік фемінітываў",
@@ -182,7 +193,18 @@ const i18n = {
     addWordModalTitle: "Даданне новага слова ў слоўнік",
     exportJsBtn: "Спампаваць dictionaries.js (для GitHub)",
     exportJsDesc: "Спампуйце абноўлены файл data/dictionaries.js для захавання змяненняў на GitHub Pages.",
-    adminOnlyNotice: "Рэдагаванне даступна толькі пасля ўваходу адміністратара."
+    adminOnlyNotice: "Рэдагаванне даступна толькі пасля ўваходу адміністратара.",
+    changePasswordBtn: "Пароль",
+    changePasswordTitle: "Змяненне пароля адміністратара",
+    changePasswordDesc: "Увядзіце бягучы пароль і ўсталюйце новы пароль адміністратара.",
+    currentPasswordLabel: "Бягучы пароль:",
+    newPasswordLabel: "Новы пароль (мін. 5 сімвалаў):",
+    confirmPasswordLabel: "Пацверджанне новага пароля:",
+    savePasswordBtn: "Захаваць новы пароль",
+    pwdMismatchError: "Новыя паролі не супадаюць!",
+    pwdCurrentWrongError: "Няправільны бягучы пароль!",
+    pwdTooShortError: "Новы пароль павінен змяшчаць не менш за 5 сімвалаў!",
+    pwdChangedSuccess: "Пароль адміністратара паспяхова зменены!"
   }
 };
 
