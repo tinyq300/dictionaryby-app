@@ -962,7 +962,7 @@
       }
     };
 
-    const jsContent = `// data/dictionaries.js - Электронны слоўнік фемінітываў і фемініннай лексікі\n// у творах Я. Коласа (трылогія «На ростанях») і М. А. Некрасава («Мароз, Чырвоны нос», «Каму на Русі жыць добра»)\n\nconst dictionariesData = ${JSON.stringify(exportData, null, 2)};\n\nwindow.dictionariesData = dictionariesData;\n`;
+    const jsContent = `// data/dictionaries.js - Электронны слоўнік фемінітываў і фемініннай лексікі\n// у творах Я. Коласа (трылогія «На ростанях») і М. А. Някрасава («Мароз, Чырвоны нос», «Каму на Русі жыць добра»)\n\nconst dictionariesData = ${JSON.stringify(exportData, null, 2)};\n\nwindow.dictionariesData = dictionariesData;\n`;
 
     const blob = new Blob([jsContent], { type: 'application/javascript;charset=utf-8' });
     const url = URL.createObjectURL(blob);
